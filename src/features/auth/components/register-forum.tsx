@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import Link from "next/link";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -84,10 +85,12 @@ export function RegistarForm() {
             >
               <div className="flex flex-col gap-4">
                 <Button variant="outline" type="button" disabled={isPending}>
+                  <Image src="/logos/github.svg" alt="github" height={20} width={20}/>
                   Continue with GitHub
                 </Button>
 
                 <Button variant="outline" type="button" disabled={isPending}>
+                  <Image src="/logos/google.svg" alt="google" height={20} width={20}/>
                   Continue with Google
                 </Button>
               </div>
