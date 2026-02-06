@@ -11,11 +11,11 @@ const Page =  async() => {
   // await caller.createWorkflow();
   // const data = await caller.getWorkflows();
 
-  const textAi = await caller.testAi();
+  // await caller.testAi();
 
  
   return (
-    <div className="min-h-screen min-w-screen flex flex-col gap-6 items-center justify-center">{textAi}
+    <div className="min-h-screen min-w-screen flex flex-col gap-6 items-center justify-center">hello
     <Logout/>
     </div>
     
