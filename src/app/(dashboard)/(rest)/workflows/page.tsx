@@ -1,8 +1,9 @@
 import { requireAuth } from "@/lib/auth.utils";
 
 const Page = async() =>{
-    await requireAuth()
-    return <div>execution page</div>
+    await requireAuth();
+    
+    return <div>Workflow page</div>
 }
 
 export default Page;
