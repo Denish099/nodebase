@@ -1,7 +1,7 @@
-import { requireUnAuth } from "@/lib/auth.utils";
+import { requireAuth } from "@/lib/auth.utils";
 
 const Page =async () =>{
-    await requireUnAuth();
+    await requireAuth();
     return <div>credentials</div>
 }
 
