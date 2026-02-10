@@ -1,7 +1,10 @@
-import { auth } from '@/lib/auth';
-import { initTRPC, TRPCError } from '@trpc/server';
-import { headers } from 'next/headers';
-import { cache } from 'react';
+import { auth } from "@/lib/auth";
+import { polarClient } from "@/lib/polar";
+import { initTRPC, TRPCError } from "@trpc/server";
+import { error } from "console";
+import { headers } from "next/headers";
+import { cache } from "react";
+import { custom } from "zod";
 export const createTRPCContext = cache(async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -15,7 +18,7 @@ export const createTRPCContext = cache(async () => {
 
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
-// For instance, the use of a t variable 
+// For instance, the use of a t variable
 // is common in i18n libraries.
 const t = initTRPC.create({
   /**
@@ -28,18 +31,36 @@ export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 
-export const protectedProcedure = baseProcedure.use(async({ctx,next})=>{
-
+export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
   const session = await auth.api.getSession({
-    headers: await headers(), 
+    headers: await headers(),
   });
 
-  if(!session){
+  if (!session) {
     throw new TRPCError({
-      code:"UNAUTHORIZED",
-      message: "unauthorized"
-    })
-  
+      code: "UNAUTHORIZED",
+      message: "unauthorized",
+    });
   }
-   return next({ctx:  {...ctx,auth:session}}); 
-})
+  return next({ ctx: { ...ctx, auth: session } });
+});
+
+export const premiumProcedure = protectedProcedure.use(
+  async ({ ctx, next }) => {
+    const customer = await polarClient.customers.getStateExternal({
+      externalId: ctx.auth.user.id,
+    });
+
+    if (
+      !customer.activeSubscriptions ||
+      customer.activeSubscriptions.length == 0
+    ) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Active subscription required",
+      });
+    }
+
+    return next({ ctx: { ...ctx, customer } });
+  },
+);
