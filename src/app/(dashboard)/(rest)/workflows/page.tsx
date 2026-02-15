@@ -8,10 +8,20 @@ import {
   WorkflowsContainer,
 } from "@/features/workflows/components/workflows";
 
-const Page = async () => {
+type Props = {
+  searchParams: Promise<SearchParams>,
+
+}
+
+import { workflowsParamsLoader } from "@/features/workflows/server/params-loader";
+import { SearchParams } from "nuqs/server";
+
+const Page = async ({searchParams}: Props) => {
   await requireAuth();
 
-  prefetchWorkflows();
+  const params = await  workflowsParamsLoader(searchParams);
+
+  prefetchWorkflows(params);
 
   return (
     <WorkflowsContainer>
