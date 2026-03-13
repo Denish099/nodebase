@@ -5,7 +5,10 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Suspense } from "react";
 import {
   WorkflowList,
+  WorkflowLoading,
   WorkflowsContainer,
+  WorkflowError
+
 } from "@/features/workflows/components/workflows";
 
 type Props = {
@@ -26,8 +29,8 @@ const Page = async ({searchParams}: Props) => {
   return (
     <WorkflowsContainer>
       <HydrateClient>
-        <ErrorBoundary fallback={<p>Error?</p>}>
-          <Suspense fallback={<p>Loading</p>}>
+        <ErrorBoundary fallback={<WorkflowError/>}>
+          <Suspense fallback={<WorkflowLoading/>}>
             <WorkflowList />
           </Suspense>
         </ErrorBoundary>
