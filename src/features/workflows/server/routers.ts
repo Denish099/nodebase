@@ -7,9 +7,9 @@ import {
 } from "@/trpc/init";
 import z from "zod";
 import { Pagination } from "@/config/constant";
+import { TRPCError } from "@trpc/server";
 
 export const workflowsRouter = createTRPCRouter({
-  
   create: protectedProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({
       data: {
@@ -44,13 +44,14 @@ export const workflowsRouter = createTRPCRouter({
 
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => {
-      return prisma.workflow.findUnique({
+    .query( ({ ctx, input }) => {
+      return  prisma.workflow.findUniqueOrThrow({
         where: {
           id: input.id,
           userId: ctx.auth.user.id,
         },
       });
+     
     }),
 
   getMany: protectedProcedure
@@ -78,9 +79,9 @@ export const workflowsRouter = createTRPCRouter({
               mode: "insensitive",
             },
           },
-          orderBy:{
+          orderBy: {
             updatedAt: "desc",
-          }
+          },
         }),
         prisma.workflow.count({
           where: {
@@ -88,7 +89,7 @@ export const workflowsRouter = createTRPCRouter({
           },
         }),
       ]);
-      const totalPages = Math.ceil(totalCount/pageSize);
+      const totalPages = Math.ceil(totalCount / pageSize);
       const hasNextPage = page < totalPages;
       const hasPreviousPage = page > 1;
 
@@ -99,7 +100,7 @@ export const workflowsRouter = createTRPCRouter({
         totalCount,
         totalPages,
         hasNextPage,
-        hasPreviousPage
-      }
+        hasPreviousPage,
+      };
     }),
 });
