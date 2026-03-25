@@ -8,6 +8,7 @@ import {
 import z from "zod";
 import { Pagination } from "@/config/constant";
 import { TRPCError } from "@trpc/server";
+import { Nodetype } from "@/generated/prisma/enums";
 
 export const workflowsRouter = createTRPCRouter({
   create: protectedProcedure.mutation(({ ctx }) => {
@@ -15,6 +16,13 @@ export const workflowsRouter = createTRPCRouter({
       data: {
         name: generateSlug(3),
         userId: ctx.auth.user.id,
+        nodes:{
+          create:{
+            type:Nodetype.INITIAL,
+            position:{x :0,y:0},
+            name: Nodetype.INITIAL,
+          }
+        }
       },
     });
   }),
@@ -45,13 +53,15 @@ export const workflowsRouter = createTRPCRouter({
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query( ({ ctx, input }) => {
-      return  prisma.workflow.findUniqueOrThrow({
+      const workflow =  prisma.workflow.findUniqueOrThrow({
         where: {
           id: input.id,
           userId: ctx.auth.user.id,
         },
       });
      
+
+      
     }),
 
   getMany: protectedProcedure
